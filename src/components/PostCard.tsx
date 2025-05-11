@@ -9,6 +9,7 @@ import avatarImg from "../assets/images/user.png";
 import { postService } from "../services/postService";
 import CreatePostModal from "../pages/CreatePost";
 import { commentService } from "../services/commentService";
+import { toast } from "react-toastify";
 
 interface Props {
   post: Post;
@@ -94,16 +95,19 @@ const PostCard: React.FC<Props> = ({
     a.click();
     document.body.removeChild(a);
     setMenuOpen(false);
+    toast.success("Post downloaded!");
   };
 
   const handleDeleteDirect = async () => {
     if (!window.confirm("Delete this post?")) return;
     try {
       await postService.deletePost(post.post_id!);
+      toast.success("Post deleted!");
       window.location.reload();
     } catch (err) {
-      console.error(err);
-      alert("Failed to delete");
+      console.error(err);      
+      toast.error("Delete failed!");
+
     }
   };
 

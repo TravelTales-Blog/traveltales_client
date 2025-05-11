@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { authService } from "../services/authService";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -24,13 +24,13 @@ const Login: React.FC = () => {
       localStorage.setItem("userId", res.user.user_id);
       localStorage.setItem("userEmail", res.user.email);
 
-      // toast.success("Login successful!");
+      toast.success("Login successful!");
       login();
       navigate("/");
       window.location.reload();
     } catch (err: any) {
       console.log(err.message || "Login failed");
-      // toast.error(err.message || "Login failed");
+      toast.error("Login failed");
     }
   };
 

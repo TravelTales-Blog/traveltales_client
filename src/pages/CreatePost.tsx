@@ -6,6 +6,7 @@ import { countryService } from "../services/countryService";
 import type { CountryDetail } from "../dtos/CountryDto";
 import { imageService } from "../services/imageUploadService";
 import { postService } from "../services/postService";
+import { toast } from "react-toastify";
 
 interface Props {
   show: boolean;
@@ -94,15 +95,18 @@ const CreatePostModal: React.FC<Props> = ({
 
       if (isEditing) {
         const updated = await postService.updatePost(payload);
+        toast.success("Post updated!");
         onUpdated?.(updated);
       } else {
         const created = await postService.createPost(payload);
+        toast.success("Post added!");
         onCreated?.(created);
       }
 
       onClose();
     } catch (err: any) {
       console.error(err);
+      toast.error("Error saving post");
       alert(err.message || "Error saving post");
     }
   };
@@ -119,7 +123,9 @@ const CreatePostModal: React.FC<Props> = ({
         style={{ width: 600, backgroundColor: "#000", borderRadius: "20px" }}
       >
         <div className="d-flex justify-content-between">
-          <h5 className="text-white">{isEditing ? "Edit Post" : "Create Post"}</h5>
+          <h5 className="text-white">
+            {isEditing ? "Edit Post" : "Create Post"}
+          </h5>
           <button
             className="btn-close "
             style={{ filter: "invert(1)" }}
@@ -200,7 +206,11 @@ const CreatePostModal: React.FC<Props> = ({
             />
           </div>
 
-          <button type="submit" className="btn w-100" style={{backgroundColor: "blue", color: "#fff"}}>
+          <button
+            type="submit"
+            className="btn w-100"
+            style={{ backgroundColor: "blue", color: "#fff" }}
+          >
             {isEditing ? "Save Changes" : "Submit"}
           </button>
         </form>
