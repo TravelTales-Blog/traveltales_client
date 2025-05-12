@@ -3,6 +3,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import sidebarLogo from "../assets/images/logoFull2.png";
 import CreatePostModal from "../pages/CreatePost";
+import { authService } from "../services/authService";
+import { toast } from "react-toastify";
 
 const Sidebar: React.FC = () => {
   const { userId } = useAuth();
@@ -11,6 +13,23 @@ const Sidebar: React.FC = () => {
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `nav-item ${isActive ? "fw-bold" : "fw-light"}`;
+
+  const handleLogout = async () => {
+    try {
+      const logout = await authService.logout();
+      console.log(logout)
+      if (logout.message == "Logged out successfully") {
+        sessionStorage.clear();
+        localStorage.clear();
+        toast.success("Logout successful!");
+        localStorage.clear();
+        nav("/");
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   return (
     <aside className="aside">
@@ -40,10 +59,7 @@ const Sidebar: React.FC = () => {
               <i className="bi bi-plus-circle me-2" /> Create Post
             </button>
 
-            <NavLink
-              to={`/profile/${userId}`}
-              className={navLinkClass}
-            >
+            <NavLink to={`/profile/${userId}`} className={navLinkClass}>
               <i className="bi bi-person-circle me-2" /> My Profile
             </NavLink>
           </>
@@ -54,19 +70,14 @@ const Sidebar: React.FC = () => {
         {userId ? (
           <button
             onClick={() => {
-              localStorage.clear();
-              nav("/");
-              window.location.reload();
+              handleLogout();
             }}
             className="sidebar-logout-btn"
           >
             Logout
           </button>
         ) : (
-          <button
-            onClick={() => nav("/login")}
-            className="sidebar-login-btn"
-          >
+          <button onClick={() => nav("/login")} className="sidebar-login-btn">
             Login
           </button>
         )}
