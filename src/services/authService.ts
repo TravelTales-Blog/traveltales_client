@@ -65,5 +65,6 @@ export const authService = {
       const error = await response.json();
       throw new Error(error.error || "Logout failed");
     }
+    return response.json();
   }
 };
