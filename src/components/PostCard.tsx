@@ -87,15 +87,35 @@ const PostCard: React.FC<Props> = ({
 
   const toggleMenu = () => setMenuOpen((o) => !o);
 
-  const handleDownload = () => {
-    const a = document.createElement("a");
-    a.href = imgUrl;
-    a.download = "";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setMenuOpen(false);
-    toast.success("Post downloaded!");
+  const handleDownload = async () => {
+    const downloadUrl = `http://localhost:3000${imgUrl}`;
+    try {
+      const response = await fetch(downloadUrl);
+      const contentType = response.headers.get("Content-Type") || "";
+      if (!contentType.startsWith("image/")) {
+        toast.error("Invalid image content");
+        return;
+      }
+
+      const blob = await response.blob();
+      const extension = contentType.split("/")[1];
+      const fileName = `post-image.${extension}`;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setMenuOpen(false);
+      toast.success("Post downloaded!");
+    } catch (err) {
+      toast.error("Failed to download image.");
+      console.error(err);
+    }
   };
 
   const handleDeleteDirect = async () => {
@@ -105,9 +125,8 @@ const PostCard: React.FC<Props> = ({
       toast.success("Post deleted!");
       window.location.reload();
     } catch (err) {
-      console.error(err);      
+      console.error(err);
       toast.error("Delete failed!");
-
     }
   };
 
